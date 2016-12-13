@@ -20476,7 +20476,8 @@ i4gkpCQsIpKQkrCISEJKwiIiCSkJi4gkpCQsIpLQ/wdJjEZ2Orz8fAAAAABJRU5ErkJggg==
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
-<p>The Data is normalized with min-max range.</p>
+<p>The Data is normalized with min-max range to be centered at 0.5 and within 0.1 - 0.9. 
+Normalizing the data recudes computational error and also reduces the chances for the weights to grow. The min-max range normalization is chosen because of its simplicity.</p>
 
 </div>
 </div>
@@ -20658,7 +20659,7 @@ test  [ 0  1 34 23 14 30  0 11 39 15 27  4  7 26  0  0  0 31  6  0 17 16  0 12  
 
 <span class="n">down_sample_factor</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">n_full_connected_layer</span> <span class="o">=</span> <span class="mi">1024</span>
-<span class="n">n_full_connected_layer2</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="c1">#n_full_connected_layer2 = 512</span>
 
 <span class="c1">#Output depth</span>
 <span class="n">k_out</span> <span class="o">=</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">]</span>
@@ -20696,7 +20697,7 @@ test  [ 0  1 34 23 14 30  0 11 39 15 27  4  7 26  0  0  0 31  6  0 17 16  0 12  
     <span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="n">k_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">stddev</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span> <span class="p">),</span>
     <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="n">k_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="n">stddev</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span> <span class="p">),</span>
     <span class="s1">&#39;fcl&#39;</span> <span class="p">:</span>         <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="n">n_full_connected_layer</span><span class="p">],</span><span class="n">stddev</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span> <span class="p">),</span>
-    <span class="s1">&#39;fcl2&#39;</span> <span class="p">:</span>         <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="n">n_full_connected_layer2</span><span class="p">],</span><span class="n">stddev</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span> <span class="p">),</span>
+    <span class="c1">#&#39;fcl2&#39; :         tf.Variable( tf.truncated_normal([n_full_connected_layer2],stddev=0.2) ),</span>
     <span class="s1">&#39;out&#39;</span><span class="p">:</span>          <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="n">n_classes</span><span class="p">],</span><span class="n">stddev</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span> <span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
@@ -20831,7 +20832,28 @@ test  [ 0  1 34 23 14 30  0 11 39 15 27  4  7 26  0  0  0 31  6  0 17 16  0 12  
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
-<p>2 layers of convolution layer and 1 layer of fully connected layer that is then fed to the output layer</p>
+<p>The netowrk consists of 2 layers of convolution layer and 1 layer of fully connected layer that is then fed to the output layer. Basically,</p>
+<p>Input:
+ 32x32 pixels with 3 colour channel is fed to the network,
+Hidden Layer 1:
+ Convolutional Layer
+ Filter Size: 5x5
+ Depth: 32
+ max_pool: factor of 2 in both x and y axis of image
+ Dropout: No
+Hidden Layer 2:
+ Convolutional Layer
+ Filter Size: 5x5
+ Depth: 64
+ max_pool: factor of 2 in both x and y axis of image
+ Dropout: No
+Hidden Fully Connected Layer:
+ Flat Fully Connected Layer 
+ 1024 nodes
+ Dropout: 0.5
+Output Layer:
+ Flat Fully Connected Layer
+ 43 nodes (43 possible classes)</p>
 
 </div>
 </div>
@@ -21134,10 +21156,47 @@ Testing Accuracy: 0.946556
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong>
 I am using AdamOptimizer. And the parameters are as follows,</p>
-<p>training_epochs = 20
+<p>training_epochs = 200
 batch_size = 128
 dropout_rate = 0.50
 learning_rate = 0.001</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Answer Extended:</strong></p>
+<p>Somewhere between 15 and 20 training epocs was consistently yielding better than 90% test accuracy already. Hence I decided to multiply that by 10 and do a overnight training with epoc of 200.</p>
+<p>I have tried both AdamOptimizer and GradientDescent, however over 10 epocs, AdamOptimizer seems to have performed better, hence I chose to use AdamOptimizer.</p>
+<p>Drop out rate of 0.5 and 0.75 didn't seem to make a difference most of the time, so I used 0.5 to aggressively evade overfitting.</p>
+<p>I actually started with batch_size of 128 and never tried to change it.</p>
+<p>Learning rate of 0.0001 seems to converge slower, 0.01 isn't always that smooth but usually does pretty well also.</p>
+<p>Hidden Convolution with layers with k=16,32 doesn't seem to do as well within 10 epocs, where as k=64,128 is just too slow.</p>
+<p>I have also tried quite a few other combinations of the training variables, different convolution layer depths and different number/size of fully connected layer. But during most of my trials, I unfortunately was using random normal instead of truncated normal to initialize my training weights. Hence didn't really yield any useful result and insights.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Answer Extended 2:</strong></p>
+<p>Overall, I started right away by building a deep Convolutional Network similar to that in class.</p>
+<p>However my validation accuracy is not going down with loss. Hence I went through the following process before I get my first working model</p>
+<ol>
+<li>Restructed my code using idea from AymericDamien's github example. </li>
+<li>Further resturcture my code to make compute most constants from some initially defined constant as much as possible. This way I would be able to test different sturctures easier. 
+ For example, calculating k_fcl_in from other variables</li>
+<li>Tried a bunch of different setups. Tried to setup GPU on Mac, VM, AWS with no success. </li>
+<li>Vivek point out that truncatedNormal should be used</li>
+<li>Decided to stick to current network structure and train the network with epoc = 200</li>
+</ol>
 
 </div>
 </div>
@@ -22928,8 +22987,10 @@ where class 99 in y_extra symbolizes a class that is not seen in our training da
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong>
-See above code block. I tested 8 images
-It got 5 out of 7 correct, and the 8th image is not one that is in training set,</p>
+See above code block. I tested 8 images</p>
+<p>It got 6 out of 7 correct, and the 8th image is not one that is in training set,
+Hence I would say the model performs alright but not as well as in the training/validation/testing set. However, we should also keep in mind that 7 images is not a large enough set to be statistcally meaningful.</p>
+<p>At 32x32 pixels, "Beware of ice/snow" and "Children crossing" sign do look somewhat similar even to human eyes, but I wasn't really expecting that the image that I have chosen to actually be difficult to classify. This was sort of a suprise to me.</p>
 
 </div>
 </div>
@@ -23002,10 +23063,10 @@ It got 5 out of 7 correct, and the 8th image is not one that is in training set,
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
-<p>Image 6: the correct class is not one of top 5.
-Image 7: the correct class is number 2.</p>
-<p>Actually image 5 has the top prediction less than 90% confidence. Other than that all images, including the incorrect predictions has over 90% confidence. 
-Image 1-4 have the correct prediction, and they do also have the highest confidence,</p>
+<p>Image 6: the correct class is not one of top s5.</p>
+<p>Everything but image 6 have ~100% confidence on its top prediction.</p>
+<p>The top prediction of image 6 (incorrect prediction) is the lowest among the 8 images, though it is still quite high at 99.94% confidence.</p>
+<p>But interestingly enough image 8 also have a very high confidence for its top prediction.</p>
 
 </div>
 </div>
